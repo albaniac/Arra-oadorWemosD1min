@@ -1,4 +1,4 @@
-
+//monta a pagina do webserver
 #include "horaNTP.h" // busca hora NTP
 
 WiFiServer server(80);
@@ -7,9 +7,9 @@ WiFiServer server(80);
 
 const int led0 = BUILTIN_LED;
 //     pino        //status        //auto     //delay
-uint8_t led1 = D1; bool v1 = 0; bool a1 = 0; int delay1;
-uint8_t led2 = D2; bool v2 = 0; bool a2 = 0; int delay2;
-uint8_t led3 = D3; bool v3 = 0; bool a3 = 0; int delay3;
+uint8_t led1 = D1; bool v1 = 0; bool a1 = 0; int tempoD1;
+uint8_t led2 = D2; bool v2 = 0; bool a2 = 0; int tempoD2;
+uint8_t led3 = D3; bool v3 = 0; bool a3 = 0; int tempoD3;
 
 //******************** TImer config *******************/ /
 #include "eeprom.h"
@@ -35,20 +35,20 @@ String horaligar2 () {//gera string da hora de acionamento
 //******* LED1 **********//
 String time1() {//gera string para exibir o delay 
   char time1[10];
-  sprintf( time1, "%d",  delay1);
+  sprintf( time1, "%d",  tempoD1);
   return time1;
 }
 
 void al1() { //aciona o led
   digitalWrite(led1,  v1);
-  delay(delay1);
+  delay(tempoD1);
   Serial.println("liga");
   v1 = 0;
 }
 void auto_al1() {// alimentador 1
   if (((int(hour()) == (int)horaLiga) || (int(hour()) == (int)horaLiga1) || (int(hour()) == (int)horaLiga2)) && int(minute()) == (int)minutoLiga && (second() <= 2)) {
     digitalWrite(led1,  v1);
-    delay(delay1);
+    delay(tempoD1);
     Serial.println("liga1");
     v1 = 0;
     Serial.println("deslig1");
@@ -59,20 +59,20 @@ void auto_al1() {// alimentador 1
 //******* LED2 **********//
 String time2() {//gera string para exibir o delay 
   char time2[10];
-  sprintf( time2, "%d",  delay2);
+  sprintf( time2, "%d",  tempoD2);
   return time2;
 }
 
 void al2() { //aciona o led
   digitalWrite(led2,  v2);
-  delay(delay2);
+  delay(tempoD2);
   Serial.println("liga2");
   v2 = 0;
 }
 void auto_al2() {// acionamento automatico alimentador 2
   if (((int(hour()) == (int)horaLiga) || (int(hour()) == (int)horaLiga1) || (int(hour()) == (int)horaLiga2)) && int(minute()) == (int)minutoLiga && (second() <= 2)) {
     digitalWrite(led2,  v2);
-    delay(delay2);
+    delay(tempoD2);
     Serial.println("liga2");
     v2 = 0;
     Serial.println("deslig2");
@@ -84,19 +84,19 @@ void auto_al2() {// acionamento automatico alimentador 2
 //******* LED3 **********//
 String time3() {//gera string para exibir o delay 
   char time3[10];
-  sprintf( time3, "%d",  delay3);
+  sprintf( time3, "%d",  tempoD3);
   return time3;
 }
 void al3() {//aciona o led
   digitalWrite(led3,  v3);
-  delay(delay3);
+  delay(tempoD3);
   Serial.println("liga");
   v3 = 0;
 }
 void auto_al3() {// acionamento automatico alimentador 3
   if (((int(hour()) == (int)horaLiga) || (int(hour()) == (int)horaLiga1) || (int(hour()) == (int)horaLiga2)) && int(minute()) == (int)minutoLiga && (second() <= 2)) {
     digitalWrite(led3,  v3);
-    delay(delay3);
+    delay(tempoD3);
     Serial.println("liga3");
     v3 = 0;
     Serial.println("deslig3");
@@ -187,14 +187,14 @@ void clientserver() {
   }
 
   else if (req.indexOf(F("/delay1u")) != -1) {
-    delay1 = delay1 + 49;
-    delay1++; if (delay1 > 1000) {
-      delay1 = 00;
+    tempoD1 = tempoD1 + 50;
+   if (tempoD1> 1000) {
+      tempoD1 = 00;
     }
   } else if (req.indexOf(F("/delay1d")) != -1) {
-    delay1 = delay1 - 49;
-    delay1--; if (delay1 < 00) {
-      delay1 = 1000;
+    tempoD1 = tempoD1 - 49;
+    tempoD1--; if (tempoD1 < 00) {
+      tempoD1 = 1000;
     }
   }
   //LED2
@@ -209,14 +209,14 @@ void clientserver() {
     a2 = 1;
     auto_al2(); // aciona função auto
   } else if (req.indexOf(F("/delay2u")) != -1) {
-    delay2 = delay2 + 49;
-    delay2++; if (delay2 > 1000) {
-      delay2 = 00;
+    tempoD2 = tempoD2 + 50;
+    if (tempoD2 > 1000) {
+      tempoD2 = 00;
     }
   } else if (req.indexOf(F("/delay2d")) != -1) {
-    delay2 = delay2 - 49;
-    delay2--; if (delay2 < 00) {
-      delay2 = 1000;
+   tempoD2 = tempoD2- 50;
+     if (tempoD2< 00) {
+      tempoD2= 1000;
     }
   }
 
@@ -232,14 +232,14 @@ void clientserver() {
     a3 = 1;
     auto_al3(); // aciona função auto
   } else if (req.indexOf(F("/delay3u")) != -1) {
-    delay3 = delay3 + 49;
-    delay3++; if (delay3 > 1000) {
-      delay3 = 00;
+    tempoD3 = tempoD3 + 50;
+    if (tempoD3 > 1000) {
+      tempoD3 = 00;
     }
   } else if (req.indexOf(F("/delay3d")) != -1) {
-    delay3 = delay3 - 49;
-    delay3--; if (delay3 < 00) {
-      delay3 = 1000;
+    tempoD3 = tempoD3 - 50;
+     if (tempoD3< 00) {
+      tempoD3 = 1000;
     }
   }
   // limpa eeprom
