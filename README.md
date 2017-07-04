@@ -15,4 +15,4 @@ Poximas melhorias
 
 BUGS observados:
 -O horario de ativação não esta sendo reconhecido.
--Os dados armazenados na memoria EEPROM do LED1 esta alterando o valor depois de armazenado.
+-Os dados armazenados na memoria EEPROM do LED1 esta alterando o valor depois de armazenado se o valor for maior que 232.
