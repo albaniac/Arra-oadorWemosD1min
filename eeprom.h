@@ -2,33 +2,34 @@
 
 //******************** EEPROM *******************//
 // Endereços reservados na memória
-uint8_t addr  = 6;    // a1
-uint8_t addr1 = 7;    // a2
-uint8_t addr2 = 8;    // a3
-uint8_t addr3 = 9;    // tempoD1
-uint8_t addr4 = 10;    // tempoD2
-uint8_t addr5 = 11;    // tempoD3
+uint8_t addr1 = 7;    // status_auto
+uint8_t eeAddress;
 
 // Funções para gerenciamento
 
 void Save_Data() {
-  EEPROM.write(addr,  (byte) a1);
-  EEPROM.write(addr1, (byte) a2);
-  EEPROM.write(addr2, (byte) a3);
-  EEPROM.write(addr3, (byte) tempoD1);
-  EEPROM.write(addr4, (byte) tempoD2);
-  EEPROM.write(addr5, (byte) tempoD3);
+ EEPROM.put(addr1,  status_auto);
+  eeAddress = 9;    //endereço inicial eeprom
+  EEPROM.put(eeAddress , tempoD1);      // Grava a variavel se o valor for diferente
+  eeAddress += sizeof(int);              // Incrementa o endereco com valor do tamanho da variavel gravada (int).
+  EEPROM.put(eeAddress , tempoD2);      // Grava a variavel se o valor for diferente
+  eeAddress += sizeof(int);             // Incrementa o endereco com valor do tamanho da variavel gravada (int).
+  EEPROM.put(eeAddress , tempoD3);      // Grava a variavel se o valor for diferente
+  eeAddress += sizeof(int);
   EEPROM.commit();
   Serial.println("*WifiRTC: Dados salvos na EEPROM");
 }
 
 void Read_Data() {
-  a1 = EEPROM.read(addr);
-  a2 = EEPROM.read(addr1);
-  a3 = EEPROM.read(addr2);
-  tempoD1 = EEPROM.read(addr3);
-  tempoD2 = EEPROM.read(addr4);
-  tempoD3 = EEPROM.read(addr5);
+ eeAddress = 9; // recupera o endereço
+  EEPROM.get(addr1,  status_auto);//
+  EEPROM.get(eeAddress , tempoD1);    // Le a EEPROM e salva na variavel
+  eeAddress += sizeof(int);               // Incrementa o endereco com valor do tamanho da variavel gravada (int).
+  EEPROM.get(eeAddress , tempoD2);    // Le a EEPROM e salva na variavel
+  eeAddress += sizeof(int);               // Incrementa o endereco com valor do tamanho da variavel gravada (int).
+  EEPROM.get(eeAddress , tempoD3);    // Le a EEPROM e salva na variavel
+  eeAddress += sizeof(int);
+
   Serial.println("*WifiRTC: Dados lidos da EEPROM");
 }
 
