@@ -1,6 +1,6 @@
 //monta a pagina do webserver
 #include "horaNTP.h" // busca hora NTP
-#include "runanyway.h"
+#include "runanyway.h" // função geral para acionamentos dos pinos
 
 //******************** botões comandos *******************//
 uint8_t status_gpio = 0;      // Define condição para GPIO
@@ -9,11 +9,11 @@ uint8_t status_auto;          // Define status do botão auto
 //******************** Função Temporizada *******************//
 
 
-int  horaLiga = 7, horaLiga1 = 12,  horaLiga2 = 18, minutoLiga = 10;
+int  horaLiga = 7, horaLiga1 = 12,  horaLiga2 = 18, minutoLiga = 10;// define os horarios de acionamento
 //uint8_t pin1 = D1, pin2 = D2, pin3 = D3;
-int tempoD1, tempoD2, tempoD3;
+int tempoD1, tempoD2, tempoD3;// tempo de acionamento dos pinos
 
-String time1() {
+String time1() {// 
   char time1[10];
   sprintf( time1, "%d",  (tempoD1 ));
   return time1;
@@ -93,7 +93,7 @@ void TimedAction() {  //executa
 
 WiFiServer server(80);
 
-String HTMLHeader() {
+String HTMLHeader() {//monta o cabeçalho da pagina
   String h = "HTTP/1.1 200 OK\r\n";
   h += "Content-Type: text/html\r\n\r\n";
   h += "<!DOCTYPE HTML><html><head><META HTTP-EQUIV='Refresh' CONTENT='10;URL=/'><meta name=\"viewport\" content=\"width=device-width, initial-scale=1, user-scalable=no\"/>\r\n";
@@ -109,26 +109,28 @@ String HTMLHeader() {
   return h;
 }
 
-String HTMLFooter() {                            //  standard HTML footer
+String HTMLFooter() { // monta o rodapé da pagina
   String f = "<BR><table width=\"100%\" bgcolor=\"black\" cellpadding=\"12\" border=\"0\">";
   f += "<tr><td><p style = \"color: white; background: black;font-size: 0.8em; font-weight: bold; text-align: center; margin: 0px 10px 0px 10px;\">";
   f += "Tiago Batista &copy; 2017</p></td></tr>";
   f += "</table></body></center></html>";
   return f;
 }
-String HTMLPage() {
+String HTMLPage() {// monta o corpo da pagina html
   String p = "</p><div class='container'>";
   p += "<h4>Wemos D1mini</h4>";
   p += "<div class='btn-group'>";
-  p += "<BR><table><tr>";
+  p += "<BR><table><tr>";//cria tabela 
+  //alterna os Botões de alimentação automatica para ON ou OFF exibindo apenas um botão na pagina
   p += (status_auto) ? "<td><a href=\"/Auto/off\" class='btn btn-primary'>Auto ON <i class=\"fa fa-toggle-on\" aria-hidden=\"true\"></i></a>" : "<td><a href=\"/Auto/on\" class='btn btn-success'>Auto OFF <i class=\"fa fa-toggle-off\" aria-hidden=\"true\"></i></a>";
   //De acordo com o status da GPIO
-  TimedAction();
+  TimedAction();// verifica o horario de acionamento pré definido
+  //alterna os botões de alimentação manual para ON ou OFF
   p += (status_gpio) ? "<a href=\"/rele/off\" class='btn btn-danger'><i class=\"fa fa-power-off\" aria-hidden=\"true\"></i> Desligar</a></td>" : "<a href=\"/rele/on\" class='btn btn-success'><i class=\"fa fa-power-off\" aria-hidden=\"true\"></i> Ligar</a></td>";
-  p += "</tr></table></div><BR>";
+  p += "</tr></table></div><BR>";// encerra tabela
   p += (F("<div class='btn-group'><p>"));
 
-  p += "<BR><table><tr>";
+  p += "<BR><table><tr>";//exibe na pagina do webserver os horarios pré definidos para acionamento
   p += (F("<td><span><a href=\"/tempoD1/u\"><button type='button' class='btn btn-info' style='margin: 5px'>D1 Up</button></a>"));
   p += "<strong style='font-size:16px;'>" + time1() +  " ms</strong>";//armazena na eeprom;// exibe o delay
   p += (F("</span><a href=\"/tempoD1/d\"; URL=/'><button type='button' class='btn btn-info' style='margin: 5px'>D1 down</button></a></td>"));
@@ -168,7 +170,7 @@ String HTMLPage() {
 }
 
 
-void webpage() {
+void webpage() {// monta o webserver
 
   // ------------------------------ - server ------------------------ -
   WiFiClient client = server.available();
@@ -187,16 +189,16 @@ void webpage() {
 
 
   // unsigned long currentMillis = millis();
-  if (req.indexOf(F("Auto/on")) != -1) {
-    status_auto = true;
+  if (req.indexOf(F("Auto/on")) != -1) {// verifica se o botão html é igual a ON
+    status_auto = true;// ativa o modo automatico
 
-  } else if (req.indexOf(F("Auto/off")) != -1) {
-    status_auto = false;
+  } else if (req.indexOf(F("Auto/off")) != -1) {// verifica se o botão html é igual a OFF
+    status_auto = false;//desativa o modo automatico
 
-  } else if (req.indexOf(F("rele/on")) != -1) {
+  } else if (req.indexOf(F("rele/on")) != -1) { //verifica se o botão html é igual a ON
     status_gpio = 1;// Muda botão ligar para ON
     digitalWrite(BUILTIN_LED, 1);                       //  all LEDs off to start
-    runAndWait(D5, status_gpio, tempoD1);
+    runAndWait(D5, status_gpio, tempoD1);//função para acionar os pinos no tempo definido
     runAndWait(D7, status_gpio, tempoD2);
     runAndWait(D8, status_gpio, tempoD3);
     status_gpio = 0;
@@ -204,12 +206,12 @@ void webpage() {
     // stateRelay = false;
     status_gpio = 0; //Muda botão ligar para OFF
 
-  } else if (req.indexOf(F("tempoD1/u")) != -1) {
+  } else if (req.indexOf(F("tempoD1/u")) != -1) {// aumenta o valor do tempo D1
     tempoD1 = tempoD1 + 20;
     if (tempoD1 > 1000) {
       tempoD1 = 0;
     }
-  } else if (req.indexOf(F("tempoD1/d")) != -1) {
+  } else if (req.indexOf(F("tempoD1/d")) != -1) {// diminui o valor do tempo D1
     tempoD1 = tempoD1 - 20;
     if (tempoD1 < 0) {
       tempoD1 = 1000;
