@@ -7,12 +7,13 @@ Acionador led, com modo automatico e manual com configuração do tempo de acion
 
 Ao adicionar no arduino manter todos os arquivos ".h" na mesma pasta.
 
+O programa já realiza atualização via OTA
+Armazena os horarios na memoria EEPROM
 
-Poximas melhorias
 
--Adicionar OTA
--Armazenar html na SPPIFS
+Proximas melhorias
+
+-poder escolher os horarios de acionamento via webserver;
+-Armazenar a pagina html na memoria SPPIFS;
 
 BUGS observados:
--O horario de ativação não esta sendo reconhecido.
--Os dados armazenados na memoria EEPROM do LED1 esta alterando o valor depois de armazenado se o valor for maior que 232.
